@@ -14,6 +14,7 @@
         "location": { ".validate": "newData.isString()" },
         "email": { ".validate": "newData.isString()" },
         "createdAt": { ".validate": "newData.isNumber()" },
+        "firstRideDiscount": { ".validate": "newData.isBoolean()" },
         "$other": { ".validate": false }
       }
     },
@@ -26,16 +27,22 @@
           ".validate": "newData.hasChildren(['pickupLocation', 'dropoffLocation', 'vehicleType', 'amount', 'status', 'createdAt'])",
           "pickupLocation": { ".validate": "newData.isString()" },
           "dropoffLocation": { ".validate": "newData.isString()" },
-          "vehicleType": { ".validate": "newData.isString() && (newData.val() === 'motorbike' || newData.val() === 'car' || newData.val() === 'minibus' || newData.val() === 'tuk-tuk')" },
+          "vehicleType": { ".validate": "newData.isString() && (newData.val() === 'motorbike' || newData.val() === 'car' || newData.val() === 'minibus' || newData.val() === 'tuk-tuk' || newData.val() === 'tuk-tuk' || newData.val() === 'suv')" },
+          "vehicleName": { ".validate": "newData.isString()" },
+          "vehicleIcon": { ".validate": "newData.isString()" },
           "amount": { ".validate": "newData.isNumber() && newData.val() > 0" },
+          "discountAmt": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "discountPct": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "discountLabel": { ".validate": "newData.isString()" },
+          "discountedAmount": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "distanceKm": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "status": { ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'confirmed' || newData.val() === 'in-transit' || newData.val() === 'completed' || newData.val() === 'cancelled')" },
           "createdAt": { ".validate": "newData.isNumber()" },
+          "updatedAt": { ".validate": "newData.isNumber()" },
           "passengerCount": { ".validate": "newData.isNumber()" },
           "isGroupBooking": { ".validate": "newData.isBoolean()" },
           "groupMembers": { ".validate": "newData.isString()" },
           "notes": { ".validate": "newData.isString()" },
-          "discount": { ".validate": "newData.isNumber()" },
-          "discountedAmount": { ".validate": "newData.isNumber()" },
           "$other": { ".validate": false }
         }
       }
