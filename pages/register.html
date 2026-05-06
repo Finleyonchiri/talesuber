@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — TalesUber</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="auth-page">
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-overlay"></div>
+    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&q=80"
+      alt="Kisumu Kenya road" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"
+      onerror="this.style.display='none'" />
+    <div class="auth-visual-content">
+      <div style="font-size:2.5rem;margin-bottom:16px">🚗</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:12px">Join TalesUber</h2>
+      <p style="color:rgba(255,255,255,0.7);max-width:340px;line-height:1.7">
+        Maseno's #1 ride platform. Verified drivers. Fair KES pricing. 24/7 available across Kisumu and Western Kenya.
+      </p>
+      <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:rgba(255,255,255,0.8)">
+          <span style="color:var(--amber)">✓</span> 10% off your first ride with TALES10
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:rgba(255,255,255,0.8)">
+          <span style="color:var(--amber)">✓</span> Real-time booking status tracking
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:rgba(255,255,255,0.8)">
+          <span style="color:var(--amber)">✓</span> Group bookings with 15% discount
+        </div>
+      </div>
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.15)">
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.5)">Founded by</div>
+        <div style="font-weight:700;font-size:1rem;margin-top:4px">Finley Nyabuga</div>
+        <div style="font-size:0.82rem;color:var(--amber)">📍 Maseno, Kisumu Kenya</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-wrapper">
+    <div class="auth-form-inner animate-fade-in">
+      <a href="../index.html" class="auth-logo">
+        <div class="auth-logo-icon">🚗</div>
+        <span class="auth-logo-text">Tales<span>Uber</span></span>
+      </a>
+
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle">Join thousands of riders across Maseno & Kisumu</p>
+
+      <form class="auth-form" id="register-form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="fullName" class="form-control" placeholder="e.g. Achieng Otieno" required />
+            <span class="form-error hidden" id="err-fullName"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" id="phone" class="form-control" placeholder="+254 7XX XXX XXX" required />
+            <span class="form-error hidden" id="err-phone"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" id="email" class="form-control" placeholder="you@example.com" required />
+          <span class="form-error hidden" id="err-email"></span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">ID / Passport Number *</label>
+            <input type="text" id="idNumber" class="form-control" placeholder="National ID or Passport" required />
+            <span class="form-error hidden" id="err-idNumber"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Location *</label>
+            <select id="location" class="form-control" required>
+              <option value="">Select town/area</option>
+            </select>
+            <span class="form-error hidden" id="err-location"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <div style="position:relative">
+            <input type="password" id="password" class="form-control" placeholder="Min 8 characters" required style="padding-right:44px" />
+            <button type="button" id="toggle-pw" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem">👁</button>
+          </div>
+          <span class="form-error hidden" id="err-password"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password *</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Repeat password" required />
+          <span class="form-error hidden" id="err-confirmPassword"></span>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:0.87rem;color:var(--text-muted)">
+          <input type="checkbox" id="agree" style="margin-top:3px;accent-color:var(--amber)" />
+          <label for="agree">I agree to TalesUber's <a href="#" style="color:var(--amber)">Terms of Service</a> and <a href="#" style="color:var(--amber)">Privacy Policy</a></label>
+        </div>
+        <span class="form-error hidden" id="err-agree"></span>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="register-btn">
+          Create Account
+        </button>
+
+        <div class="auth-switch">
+          Already have an account? <a href="login.html">Sign in here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { registerUser, onAuthChange } from '../js/firebase.js';
+
+  // Redirect if already logged in
+  onAuthChange(user => { if (user) window.location.href = 'dashboard.html'; });
+
+  // Populate locations
+  fetch('../js/database.json').then(r => r.json()).then(data => {
+    const sel = document.getElementById('location');
+    data.pickupLocations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc; opt.textContent = loc;
+      sel.appendChild(opt);
+    });
+  });
+
+  // Toggle password visibility
+  document.getElementById('toggle-pw').addEventListener('click', () => {
+    const pw = document.getElementById('password');
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  });
+
+  // Toast helper
+  function toast(msg, type = 'info') {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-text">${msg}</span>`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById('err-' + id);
+    if (!el) return;
+    el.textContent = msg; el.classList.remove('hidden');
+  }
+  function clearErrs() {
+    document.querySelectorAll('.form-error').forEach(e => { e.textContent = ''; e.classList.add('hidden'); });
+  }
+
+  document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrs();
+
+    const fullName       = document.getElementById('fullName').value.trim();
+    const phone          = document.getElementById('phone').value.trim();
+    const email          = document.getElementById('email').value.trim();
+    const idNumber       = document.getElementById('idNumber').value.trim();
+    const location       = document.getElementById('location').value;
+    const password       = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const agree          = document.getElementById('agree').checked;
+
+    let valid = true;
+    if (!fullName || fullName.length < 2)         { showErr('fullName', 'Enter your full name'); valid = false; }
+    if (!phone || phone.length < 10)              { showErr('phone', 'Enter a valid phone number'); valid = false; }
+    if (!email || !email.includes('@'))           { showErr('email', 'Enter a valid email address'); valid = false; }
+    if (!idNumber || idNumber.length < 6)         { showErr('idNumber', 'Enter a valid ID/passport number'); valid = false; }
+    if (!location)                                { showErr('location', 'Select your location'); valid = false; }
+    if (!password || password.length < 8)         { showErr('password', 'Password must be at least 8 characters'); valid = false; }
+    if (password !== confirmPassword)             { showErr('confirmPassword', 'Passwords do not match'); valid = false; }
+    if (!agree)                                   { showErr('agree', 'You must agree to the terms'); valid = false; }
+    if (!valid) return;
+
+    const btn = document.getElementById('register-btn');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+
+    try {
+      await registerUser({ email, password, fullName, phone, idNumber, location });
+      toast('Account created! Welcome to TalesUber 🎉', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1200);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Create Account';
+      const msgs = {
+        'auth/email-already-in-use': 'This email is already registered. Sign in instead.',
+        'auth/weak-password': 'Password is too weak. Use at least 8 characters.',
+        'auth/invalid-email': 'The email address is invalid.',
+      };
+      toast(msgs[err.code] || err.message, 'error');
+    }
+  });
+</script>
+</body>
+</html>

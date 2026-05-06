@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "currency": "KES",
+    "company": "TalesUber",
+    "headquarters": "Maseno, Kisumu, Kenya",
+    "founder": "Finley Nyabuga",
+    "lastUpdated": "2025-01-01"
+  },
+
+  "zones": {
+    "maseno": {
+      "name": "Maseno",
+      "description": "University town on the equator",
+      "baseMultiplier": 1.0
+    },
+    "kisumu": {
+      "name": "Kisumu City",
+      "description": "Capital of Kisumu County",
+      "baseMultiplier": 1.2
+    },
+    "ahero": {
+      "name": "Ahero",
+      "description": "Rice bowl of Kenya",
+      "baseMultiplier": 1.1
+    },
+    "luanda": {
+      "name": "Luanda",
+      "description": "Vihiga County HQ",
+      "baseMultiplier": 1.15
+    }
+  },
+
+  "vehicles": {
+    "motorbike": {
+      "name": "MotoBoda",
+      "icon": "🏍️",
+      "description": "Fast & affordable boda boda",
+      "seats": 1,
+      "basePrice": 50,
+      "perKmRate": 15,
+      "color": "#FF6B35",
+      "features": ["Fast", "Budget-friendly", "City lanes"],
+      "surgeMultiplier": 1.3,
+      "groupEligible": false
+    },
+    "tuk-tuk": {
+      "name": "TukTuk",
+      "icon": "🛺",
+      "description": "Classic 3-wheeler for short hops",
+      "seats": 3,
+      "basePrice": 80,
+      "perKmRate": 20,
+      "color": "#FFD700",
+      "features": ["3 passengers", "Open air", "Affordable"],
+      "surgeMultiplier": 1.2,
+      "groupEligible": false
+    },
+    "car": {
+      "name": "TalesRide",
+      "icon": "🚗",
+      "description": "Comfortable private car",
+      "seats": 4,
+      "basePrice": 150,
+      "perKmRate": 35,
+      "color": "#2196F3",
+      "features": ["AC", "4 passengers", "Comfortable"],
+      "surgeMultiplier": 1.4,
+      "groupEligible": true
+    },
+    "suv": {
+      "name": "TalesX",
+      "icon": "🚙",
+      "description": "Premium SUV experience",
+      "seats": 7,
+      "basePrice": 300,
+      "perKmRate": 55,
+      "color": "#9C27B0",
+      "features": ["Premium", "7 seats", "AC", "WiFi"],
+      "surgeMultiplier": 1.5,
+      "groupEligible": true
+    },
+    "minibus": {
+      "name": "TalesShuttle",
+      "icon": "🚐",
+      "description": "Group shuttle for events & trips",
+      "seats": 14,
+      "basePrice": 500,
+      "perKmRate": 80,
+      "color": "#4CAF50",
+      "features": ["14 passengers", "Events", "Trips", "AC"],
+      "surgeMultiplier": 1.2,
+      "groupEligible": true
+    }
+  },
+
+  "routes": [
+    {
+      "id": "R001",
+      "from": "Maseno University",
+      "to": "Kisumu City Centre",
+      "fromCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "toCoords": { "lat": -0.1022, "lng": 34.7617 },
+      "distanceKm": 18,
+      "estimatedMinutes": 35,
+      "popular": true,
+      "tag": "Popular"
+    },
+    {
+      "id": "R002",
+      "from": "Maseno University",
+      "to": "Ahero Town",
+      "fromCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "toCoords": { "lat": -0.1733, "lng": 34.9167 },
+      "distanceKm": 38,
+      "estimatedMinutes": 55,
+      "popular": false,
+      "tag": "Long Distance"
+    },
+    {
+      "id": "R003",
+      "from": "Kisumu Airport",
+      "to": "Maseno University",
+      "fromCoords": { "lat": -0.0861, "lng": 34.7289 },
+      "toCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "distanceKm": 22,
+      "estimatedMinutes": 40,
+      "popular": true,
+      "tag": "Airport"
+    },
+    {
+      "id": "R004",
+      "from": "Maseno Market",
+      "to": "Luanda Town",
+      "fromCoords": { "lat": -0.0065, "lng": 34.5991 },
+      "toCoords": { "lat": 0.3333, "lng": 34.5167 },
+      "distanceKm": 45,
+      "estimatedMinutes": 70,
+      "popular": false,
+      "tag": "Cross County"
+    },
+    {
+      "id": "R005",
+      "from": "Maseno University",
+      "to": "Kisumu Referral Hospital",
+      "fromCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "toCoords": { "lat": -0.1022, "lng": 34.7617 },
+      "distanceKm": 20,
+      "estimatedMinutes": 38,
+      "popular": true,
+      "tag": "Medical"
+    },
+    {
+      "id": "R006",
+      "from": "Kisumu City Centre",
+      "to": "Ahero Town",
+      "fromCoords": { "lat": -0.1022, "lng": 34.7617 },
+      "toCoords": { "lat": -0.1733, "lng": 34.9167 },
+      "distanceKm": 25,
+      "estimatedMinutes": 40,
+      "popular": false,
+      "tag": "Town Hop"
+    },
+    {
+      "id": "R007",
+      "from": "Maseno University",
+      "to": "Kisumu Mega City Mall",
+      "fromCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "toCoords": { "lat": -0.1022, "lng": 34.7617 },
+      "distanceKm": 19,
+      "estimatedMinutes": 36,
+      "popular": true,
+      "tag": "Shopping"
+    },
+    {
+      "id": "R008",
+      "from": "Maseno University Gate",
+      "to": "Luanda Market",
+      "fromCoords": { "lat": -0.0058, "lng": 34.5987 },
+      "toCoords": { "lat": 0.3333, "lng": 34.5167 },
+      "distanceKm": 48,
+      "estimatedMinutes": 75,
+      "popular": false,
+      "tag": "Market"
+    }
+  ],
+
+  "discounts": {
+    "newUser": {
+      "code": "TALES10",
+      "label": "New Member",
+      "percentage": 10,
+      "description": "Welcome discount for new members",
+      "oneTime": true
+    },
+    "groupBooking": {
+      "code": "GROUP15",
+      "label": "Group Ride",
+      "percentage": 15,
+      "description": "Book for 3+ people",
+      "minPassengers": 3
+    },
+    "longDistance": {
+      "code": "FAR20",
+      "label": "Long Distance",
+      "percentage": 20,
+      "description": "Rides over 40km",
+      "minDistanceKm": 40
+    },
+    "earlyBird": {
+      "code": "EARLY12",
+      "label": "Early Bird",
+      "percentage": 12,
+      "description": "Book before 7AM",
+      "timeWindow": { "start": "00:00", "end": "07:00" }
+    },
+    "weekend": {
+      "code": "WKND8",
+      "label": "Weekend Special",
+      "percentage": 8,
+      "description": "Every Saturday & Sunday",
+      "days": [6, 0]
+    },
+    "student": {
+      "code": "STUDENT5",
+      "label": "Student",
+      "percentage": 5,
+      "description": "Maseno University students",
+      "requiresVerification": true
+    }
+  },
+
+  "pickupLocations": [
+    "Maseno University Main Gate",
+    "Maseno University Back Gate",
+    "Maseno Market",
+    "Maseno Police Station",
+    "Maseno Health Centre",
+    "Kisumu City Centre",
+    "Kisumu Airport",
+    "Kisumu Referral Hospital",
+    "Kisumu Mega City Mall",
+    "Kisumu Bus Terminal",
+    "Kisumu Railway Station",
+    "Ahero Junction",
+    "Ahero Town Centre",
+    "Luanda Town",
+    "Luanda Market",
+    "Siaya Town",
+    "Bondo Town",
+    "Homa Bay Town",
+    "Migori Town",
+    "Vihiga Town"
+  ]
+}

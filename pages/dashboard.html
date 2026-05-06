@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — TalesUber</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+<div id="toast-container"></div>
+<div id="page-loader"><div class="loader-logo">TalesUber</div><div class="loader-bar"><div class="loader-bar-fill"></div></div></div>
+
+<!-- ── Navbar ─────────────────────────────────── -->
+<nav class="navbar">
+  <a href="../index.html" class="navbar-brand">
+    <div class="navbar-logo">🚗</div>
+    <span class="navbar-brand-text">Tales<span>Uber</span></span>
+  </a>
+  <div class="navbar-links">
+    <span id="nav-greeting" style="font-size:0.88rem;color:var(--text-muted)"></span>
+    <button class="btn btn-secondary btn-sm" id="logout-btn">Sign Out</button>
+  </div>
+</nav>
+
+<!-- ── Main Layout ─────────────────────────────── -->
+<div class="page-content">
+  <div class="dash-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <button class="sidebar-link active" data-view="home">
+          <span class="sidebar-icon">🏠</span> Home
+        </button>
+        <button class="sidebar-link" data-view="book">
+          <span class="sidebar-icon">➕</span> Book a Ride
+        </button>
+        <button class="sidebar-link" data-view="bookings">
+          <span class="sidebar-icon">📋</span> My Bookings
+        </button>
+        <button class="sidebar-link" data-view="track">
+          <span class="sidebar-icon">📍</span> Track Ride
+        </button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-link" data-view="profile">
+          <span class="sidebar-icon">👤</span> My Profile
+        </button>
+        <button class="sidebar-link" data-view="discounts">
+          <span class="sidebar-icon">🎟️</span> Discounts
+        </button>
+      </div>
+      <div class="sidebar-user">
+        <div class="sidebar-user-name" id="sidebar-name">Loading…</div>
+        <div class="sidebar-user-email" id="sidebar-email"></div>
+        <div style="font-size:0.75rem;color:var(--amber);margin-top:4px" id="sidebar-location"></div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+
+      <!-- ── HOME VIEW ──────────────────────────── -->
+      <div id="view-home">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Welcome back, <span id="home-name" style="color:var(--amber)">Rider</span> 👋</h1>
+            <div class="dash-subtitle">Ready for your next ride? Book now or track an existing ride.</div>
+          </div>
+          <button class="btn btn-primary" data-view="book" onclick="switchView('book')">+ Book a Ride</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="home-stats">
+          <div class="stat-card">
+            <div class="stat-card-label">Total Rides</div>
+            <div class="stat-card-value text-amber" id="stat-total">0</div>
+            <div class="stat-card-sub">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Active Rides</div>
+            <div class="stat-card-value" id="stat-active">0</div>
+            <div class="stat-card-sub">In progress</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Completed</div>
+            <div class="stat-card-value text-green" id="stat-done">0</div>
+            <div class="stat-card-sub">Trips finished</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Total Spent</div>
+            <div class="stat-card-value" id="stat-spent">KES 0</div>
+            <div class="stat-card-sub">Kenyan Shillings</div>
+          </div>
+        </div>
+
+        <!-- Recent Bookings Preview -->
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700">Recent Bookings</h3>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('bookings')">View all →</button>
+          </div>
+          <div id="recent-bookings-list">
+            <div style="text-align:center;padding:40px;color:var(--text-muted)">
+              <div style="font-size:2.5rem;margin-bottom:12px">🚗</div>
+              <div>No rides yet. <button onclick="switchView('book')" style="color:var(--amber);background:none;border:none;cursor:pointer;font-size:inherit">Book your first ride →</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Discount Promo -->
+        <div class="discount-banner mt-3">
+          <div>
+            <div style="font-weight:700;font-size:0.95rem">🎉 Your Welcome Discount</div>
+            <div style="font-size:0.82rem;color:var(--text-muted);margin-top:2px">Use code TALES10 for 10% off your first ride</div>
+          </div>
+          <div class="discount-badge">10% OFF</div>
+        </div>
+      </div>
+
+      <!-- ── BOOK A RIDE VIEW ────────────────────── -->
+      <div id="view-book" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Book a Ride</h1>
+            <div class="dash-subtitle">Single or group booking across Maseno, Kisumu & beyond</div>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps" id="booking-steps">
+          <div class="step active" id="step-1"><div class="step-num">1</div><span>Route</span></div>
+          <div class="step-line" id="line-1"></div>
+          <div class="step" id="step-2"><div class="step-num">2</div><span>Vehicle</span></div>
+          <div class="step-line" id="line-2"></div>
+          <div class="step" id="step-3"><div class="step-num">3</div><span>Passengers</span></div>
+          <div class="step-line" id="line-3"></div>
+          <div class="step" id="step-4"><div class="step-num">4</div><span>Payment</span></div>
+        </div>
+
+        <!-- Step 1: Route -->
+        <div id="booking-step-1">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:20px">📍 Where are you going?</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="form-group">
+                <label class="form-label">Pickup Location *</label>
+                <select id="pickup" class="form-control"><option value="">Select pickup point</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Drop-off Location *</label>
+                <select id="dropoff" class="form-control"><option value="">Select destination</option></select>
+              </div>
+            </div>
+
+            <!-- Popular routes -->
+            <div style="margin-top:20px">
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Popular Routes</div>
+              <div id="popular-routes" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="gotoStep(2)">Next: Choose Vehicle →</button>
+        </div>
+
+        <!-- Step 2: Vehicle -->
+        <div id="booking-step-2" class="hidden">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:8px">🚗 Choose Your Vehicle</h3>
+            <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:20px">Prices are for this route and may vary with group size</p>
+            <div class="vehicle-grid" id="vehicle-options"></div>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-secondary" onclick="gotoStep(1)">← Back</button>
+            <button class="btn btn-primary" onclick="gotoStep(3)">Next: Passengers →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Passengers & Notes -->
+        <div id="booking-step-3" class="hidden">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:20px">👥 Passenger Details</h3>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Booking Type</label>
+              <div style="display:flex;gap:12px;margin-top:4px">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem">
+                  <input type="radio" name="booking-type" value="single" checked style="accent-color:var(--amber)" onchange="toggleGroupFields(false)" />
+                  Solo Ride
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem">
+                  <input type="radio" name="booking-type" value="group" style="accent-color:var(--amber)" onchange="toggleGroupFields(true)" />
+                  Group Booking (15% off for 3+)
+                </label>
+              </div>
+            </div>
+
+            <div id="group-fields" class="hidden">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                <div class="form-group">
+                  <label class="form-label">Number of Passengers *</label>
+                  <input type="number" id="passenger-count" class="form-control" min="2" max="14" value="2" onchange="recalcPrice()" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Group Members (names)</label>
+                  <input type="text" id="group-members" class="form-control" placeholder="e.g. Otieno, Akinyi, Mwenda" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Special Notes (optional)</label>
+              <textarea id="booking-notes" class="form-control" rows="2" placeholder="e.g. I have luggage, pick me up at the gate, etc." style="resize:vertical"></textarea>
+            </div>
+
+            <!-- Discount code -->
+            <div style="margin-top:16px;display:flex;gap:10px">
+              <div class="form-group" style="flex:1">
+                <label class="form-label">Discount Code</label>
+                <input type="text" id="discount-code" class="form-control" placeholder="e.g. TALES10" style="text-transform:uppercase" />
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button class="btn btn-secondary" onclick="applyDiscount()">Apply</button>
+              </div>
+            </div>
+            <div id="discount-msg" style="font-size:0.85rem;margin-top:6px"></div>
+          </div>
+
+          <!-- Price Display -->
+          <div class="price-display" id="price-display">
+            <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">💰 Price Breakdown (KES)</div>
+            <div class="price-breakdown" id="price-breakdown"></div>
+          </div>
+
+          <div class="flex gap-2 mt-2">
+            <button class="btn btn-secondary" onclick="gotoStep(2)">← Back</button>
+            <button class="btn btn-primary" onclick="gotoStep(4)">Next: Confirm →</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Confirm & Pay -->
+        <div id="booking-step-4" class="hidden">
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:20px">✅ Confirm Your Booking</h3>
+            <div id="booking-summary" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:16px">💳 Payment Method</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer">
+                <input type="radio" name="payment" value="mpesa" checked style="accent-color:var(--amber)" />
+                <span style="font-size:1.1rem">📱</span>
+                <div>
+                  <div style="font-weight:600;font-size:0.92rem">M-Pesa</div>
+                  <div style="font-size:0.78rem;color:var(--text-muted)">Pay via Safaricom M-Pesa</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer">
+                <input type="radio" name="payment" value="cash" style="accent-color:var(--amber)" />
+                <span style="font-size:1.1rem">💵</span>
+                <div>
+                  <div style="font-weight:600;font-size:0.92rem">Cash</div>
+                  <div style="font-size:0.78rem;color:var(--text-muted)">Pay the driver on arrival</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer">
+                <input type="radio" name="payment" value="airtel" style="accent-color:var(--amber)" />
+                <span style="font-size:1.1rem">📲</span>
+                <div>
+                  <div style="font-weight:600;font-size:0.92rem">Airtel Money</div>
+                  <div style="font-size:0.78rem;color:var(--text-muted)">Pay via Airtel Money</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button class="btn btn-secondary" onclick="gotoStep(3)">← Back</button>
+            <button class="btn btn-primary btn-lg" id="confirm-booking-btn" onclick="confirmBooking()">
+              🚗 Confirm Booking
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MY BOOKINGS VIEW ─────────────────────── -->
+      <div id="view-bookings" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">My Bookings</h1>
+            <div class="dash-subtitle">All your rides — past, active and upcoming</div>
+          </div>
+          <button class="btn btn-primary" onclick="switchView('book')">+ New Booking</button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm filter-tab active" data-filter="all">All</button>
+          <button class="btn btn-secondary btn-sm filter-tab" data-filter="pending">Pending</button>
+          <button class="btn btn-secondary btn-sm filter-tab" data-filter="confirmed">Confirmed</button>
+          <button class="btn btn-secondary btn-sm filter-tab" data-filter="in-transit">In Transit</button>
+          <button class="btn btn-secondary btn-sm filter-tab" data-filter="completed">Completed</button>
+          <button class="btn btn-secondary btn-sm filter-tab" data-filter="cancelled">Cancelled</button>
+        </div>
+
+        <div id="bookings-list" style="display:flex;flex-direction:column;gap:12px">
+          <div style="text-align:center;padding:60px;color:var(--text-muted)">
+            <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+            <div>Loading your bookings…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRACK RIDE VIEW ─────────────────────── -->
+      <div id="view-track" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Track Ride</h1>
+            <div class="dash-subtitle">Live status of your active booking</div>
+          </div>
+        </div>
+
+        <div id="track-content">
+          <div style="text-align:center;padding:60px;color:var(--text-muted)">
+            <div style="font-size:3rem;margin-bottom:16px">📍</div>
+            <div style="font-size:1rem;font-weight:600;margin-bottom:8px">No Active Ride</div>
+            <div style="font-size:0.88rem">Book a ride to start tracking it here.</div>
+            <button class="btn btn-primary mt-2" onclick="switchView('book')">Book a Ride</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE VIEW ─────────────────────────── -->
+      <div id="view-profile" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">My Profile</h1>
+            <div class="dash-subtitle">Your account details registered with TalesUber</div>
+          </div>
+        </div>
+        <div class="card" style="max-width:520px">
+          <div id="profile-content">
+            <div style="text-align:center;padding:40px;color:var(--text-muted)">Loading profile…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DISCOUNTS VIEW ─────────────────────────── -->
+      <div id="view-discounts" class="hidden">
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Discounts & Offers</h1>
+            <div class="dash-subtitle">Save more on every ride with TalesUber promo codes</div>
+          </div>
+        </div>
+        <div id="discounts-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Booking Detail Modal -->
+<div id="booking-detail-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Booking Details</div>
+      <button class="modal-close" id="close-booking-modal">✕</button>
+    </div>
+    <div id="booking-detail-content"></div>
+  </div>
+</div>
+
+<script type="module">
+import { onAuthChange, logoutUser, getUserData, getBookings, listenToBookings, createBooking } from '../js/firebase.js';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let currentUser = null;
+let userData    = null;
+let allBookings = [];
+let db_data     = null;
+let selectedVehicle = null;
+let selectedRoute   = null;
+let appliedDiscount = null;
+
+// ── Init ───────────────────────────────────────────────────────────────────
+onAuthChange(async user => {
+  if (!user) { window.location.href = 'login.html'; return; }
+  currentUser = user;
+  document.getElementById('nav-greeting').textContent = user.email;
+
+  userData = await getUserData(user.uid);
+  if (userData) {
+    document.getElementById('home-name').textContent = userData.fullName.split(' ')[0];
+    document.getElementById('sidebar-name').textContent = userData.fullName;
+    document.getElementById('sidebar-email').textContent = userData.email;
+    document.getElementById('sidebar-location').textContent = '📍 ' + userData.location;
+    renderProfile();
+  }
+
+  db_data = await fetch('../js/database.json').then(r => r.json());
+  populateLocations();
+  renderVehicleOptions();
+  renderDiscounts();
+  renderPopularRoutes();
+
+  listenToBookings(user.uid, (bookings) => {
+    allBookings = bookings;
+    renderStats(bookings);
+    renderRecentBookings(bookings.slice(0, 3));
+    renderBookingsList('all');
+    checkActiveRide(bookings);
+  });
+
+  // Hide loader
+  const loader = document.getElementById('page-loader');
+  loader.style.opacity = '0'; loader.style.transition = 'opacity 0.4s';
+  setTimeout(() => loader.remove(), 400);
+});
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-text">${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+
+// ── View Switching ─────────────────────────────────────────────────────────
+window.switchView = function(name) {
+  document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden'));
+  document.getElementById('view-' + name).classList.remove('hidden');
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    l.classList.toggle('active', l.dataset.view === name);
+  });
+  if (name === 'bookings') renderBookingsList(currentFilter);
+};
+
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', () => switchView(link.dataset.view));
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => logoutUser());
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+function renderStats(bookings) {
+  const active = bookings.filter(b => ['pending','confirmed','in-transit'].includes(b.status)).length;
+  const done   = bookings.filter(b => b.status === 'completed').length;
+  const spent  = bookings.filter(b => b.status === 'completed').reduce((s, b) => s + (b.discountedAmount || b.amount || 0), 0);
+  document.getElementById('stat-total').textContent  = bookings.length;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-done').textContent   = done;
+  document.getElementById('stat-spent').textContent  = 'KES ' + spent.toLocaleString();
+}
+
+// ── Populate Locations ─────────────────────────────────────────────────────
+function populateLocations() {
+  ['pickup','dropoff'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="">Select ${id === 'pickup' ? 'pickup' : 'destination'}</option>`;
+    db_data.pickupLocations.forEach(loc => {
+      const o = document.createElement('option'); o.value = loc; o.textContent = loc;
+      sel.appendChild(o);
+    });
+  });
+  document.getElementById('pickup').addEventListener('change', () => { selectedRoute = null; recalcPrice(); });
+  document.getElementById('dropoff').addEventListener('change', () => { selectedRoute = null; recalcPrice(); });
+}
+
+// ── Popular Routes ─────────────────────────────────────────────────────────
+function renderPopularRoutes() {
+  const container = document.getElementById('popular-routes');
+  db_data.routes.filter(r => r.popular).forEach(route => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary btn-sm';
+    btn.style.fontSize = '0.8rem';
+    btn.innerHTML = `${route.tag ? `<span style="color:var(--amber)">${route.tag}</span> · ` : ''}${route.from.split(' ')[0]} → ${route.to.split(' ')[0]}`;
+    btn.addEventListener('click', () => {
+      document.getElementById('pickup').value  = route.from;
+      document.getElementById('dropoff').value = route.to;
+      selectedRoute = route;
+      recalcPrice();
+    });
+    container.appendChild(btn);
+  });
+}
+
+// ── Vehicle Options ────────────────────────────────────────────────────────
+function renderVehicleOptions() {
+  const container = document.getElementById('vehicle-options');
+  container.innerHTML = '';
+  Object.entries(db_data.vehicles).forEach(([key, v]) => {
+    const price = calcVehiclePrice(key);
+    const el = document.createElement('div');
+    el.className = 'vehicle-card';
+    el.dataset.key = key;
+    el.innerHTML = `
+      <div class="vehicle-icon">${v.icon}</div>
+      <div class="vehicle-name">${v.name}</div>
+      <div class="vehicle-seats">Up to ${v.seats} passenger${v.seats > 1 ? 's' : ''}</div>
+      <div class="vehicle-price">KES ${price}</div>
+      <div class="vehicle-features">
+        ${v.features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
+      </div>
+    `;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedVehicle = key;
+      recalcPrice();
+    });
+    container.appendChild(el);
+  });
+}
+
+function calcVehiclePrice(vehicleKey) {
+  if (!db_data) return 0;
+  const v = db_data.vehicles[vehicleKey];
+  const dist = selectedRoute ? selectedRoute.distanceKm : 10;
+  return Math.round(v.basePrice + v.perKmRate * dist);
+}
+
+// ── Step Navigation ────────────────────────────────────────────────────────
+window.gotoStep = function(n) {
+  if (n === 2) {
+    const pickup  = document.getElementById('pickup').value;
+    const dropoff = document.getElementById('dropoff').value;
+    if (!pickup || !dropoff) { toast('Please select pickup and drop-off locations', 'error'); return; }
+    if (pickup === dropoff)  { toast('Pickup and drop-off cannot be the same', 'error'); return; }
+    renderVehicleOptions();
+  }
+  if (n === 3 && !selectedVehicle) { toast('Please select a vehicle', 'error'); return; }
+  if (n === 4) { renderBookingSummary(); }
+
+  for (let i = 1; i <= 4; i++) {
+    const stepEl  = document.getElementById('booking-step-' + i);
+    const stepNum = document.getElementById('step-' + i);
+    if (stepEl)  stepEl.classList.toggle('hidden', i !== n);
+    if (stepNum) {
+      stepNum.classList.remove('active', 'done');
+      if (i < n)  stepNum.classList.add('done');
+      if (i === n) stepNum.classList.add('active');
+    }
+    if (i < 4) {
+      const line = document.getElementById('line-' + i);
+      if (line) line.classList.toggle('done', i < n);
+    }
+  }
+  recalcPrice();
+};
+
+// ── Group Fields ───────────────────────────────────────────────────────────
+window.toggleGroupFields = function(show) {
+  document.getElementById('group-fields').classList.toggle('hidden', !show);
+  recalcPrice();
+};
+
+// ── Price Calculator ───────────────────────────────────────────────────────
+window.recalcPrice = function() {
+  if (!selectedVehicle || !db_data) return;
+  const v         = db_data.vehicles[selectedVehicle];
+  const dist      = selectedRoute ? selectedRoute.distanceKm : estimateDist();
+  const isGroup   = document.querySelector('input[name="booking-type"]:checked')?.value === 'group';
+  const passengers = isGroup ? parseInt(document.getElementById('passenger-count')?.value || 1) : 1;
+
+  let baseAmount = Math.round(v.basePrice + v.perKmRate * dist);
+  let discount   = appliedDiscount ? appliedDiscount.percentage : 0;
+
+  // Auto group discount
+  if (isGroup && passengers >= 3 && !appliedDiscount) discount = 15;
+
+  const discountAmount  = Math.round(baseAmount * discount / 100);
+  const finalAmount     = baseAmount - discountAmount;
+
+  const bd = document.getElementById('price-breakdown');
+  if (!bd) return;
+  bd.innerHTML = `
+    <div class="price-line"><span>${v.name} base fare</span><span>KES ${v.basePrice}</span></div>
+    <div class="price-line"><span>Distance (${dist}km × KES ${v.perKmRate}/km)</span><span>KES ${v.perKmRate * dist}</span></div>
+    ${isGroup && passengers > 1 ? `<div class="price-line"><span>Passengers</span><span>× ${passengers}</span></div>` : ''}
+    ${discount > 0 ? `<div class="price-line discount"><span>Discount (${discount}%)</span><span>- KES ${discountAmount}</span></div>` : ''}
+    <div class="price-line total"><span>Total</span><span>KES ${finalAmount.toLocaleString()}</span></div>
+  `;
+  return { baseAmount, discountAmount, finalAmount, discount, dist, passengers };
+};
+
+function estimateDist() {
+  const p = document.getElementById('pickup')?.value;
+  const d = document.getElementById('dropoff')?.value;
+  if (!p || !d) return 10;
+  const route = db_data.routes.find(r =>
+    (r.from === p && r.to === d) || (r.from === d && r.to === p)
+  );
+  return route ? route.distanceKm : 10;
+}
+
+// ── Discount Code ──────────────────────────────────────────────────────────
+window.applyDiscount = function() {
+  const code = document.getElementById('discount-code').value.trim().toUpperCase();
+  const msgEl = document.getElementById('discount-msg');
+  const match = Object.values(db_data.discounts).find(d => d.code === code);
+  if (match) {
+    appliedDiscount = match;
+    msgEl.textContent = `✅ "${match.label}" applied! ${match.percentage}% off`;
+    msgEl.style.color = 'var(--green)';
+    toast(`Discount code applied: ${match.percentage}% off`, 'success');
+  } else {
+    appliedDiscount = null;
+    msgEl.textContent = '❌ Invalid or expired code';
+    msgEl.style.color = 'var(--red)';
+  }
+  recalcPrice();
+};
+
+// ── Booking Summary ────────────────────────────────────────────────────────
+function renderBookingSummary() {
+  const v = db_data.vehicles[selectedVehicle];
+  const priceInfo = recalcPrice();
+  const pickup  = document.getElementById('pickup').value;
+  const dropoff = document.getElementById('dropoff').value;
+  const isGroup = document.querySelector('input[name="booking-type"]:checked')?.value === 'group';
+  const passengers = isGroup ? parseInt(document.getElementById('passenger-count')?.value || 1) : 1;
+  const notes   = document.getElementById('booking-notes')?.value || '';
+  const dist    = selectedRoute ? selectedRoute.distanceKm : estimateDist();
+  const eta     = selectedRoute ? selectedRoute.estimatedMinutes : Math.round(dist * 2.5);
+
+  document.getElementById('booking-summary').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Pickup</div>
+        <div style="font-weight:600;margin-top:4px;font-size:0.92rem">${pickup}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Drop-off</div>
+        <div style="font-weight:600;margin-top:4px;font-size:0.92rem">${dropoff}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Vehicle</div>
+        <div style="font-weight:600;margin-top:4px">${v.icon} ${v.name}</div>
+      </div>
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Est. Duration</div>
+        <div style="font-weight:600;margin-top:4px">${eta} min · ${dist}km</div>
+      </div>
+      ${isGroup ? `
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Passengers</div>
+        <div style="font-weight:600;margin-top:4px">${passengers} people</div>
+      </div>` : ''}
+      ${notes ? `
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Notes</div>
+        <div style="font-weight:600;margin-top:4px;font-size:0.88rem">${notes}</div>
+      </div>` : ''}
+    </div>
+    ${priceInfo ? `
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-sm);padding:16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:0.82rem;color:var(--text-muted)">Total to Pay (KES)</div>
+        ${priceInfo.discountAmount > 0 ? `<div style="font-size:0.82rem;text-decoration:line-through;color:var(--text-muted)">KES ${priceInfo.baseAmount.toLocaleString()}</div>` : ''}
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--amber)">KES ${priceInfo.finalAmount.toLocaleString()}</div>
+    </div>` : ''}
+  `;
+}
+
+// ── Confirm Booking ────────────────────────────────────────────────────────
+window.confirmBooking = async function() {
+  const btn = document.getElementById('confirm-booking-btn');
+  btn.disabled = true; btn.textContent = '⏳ Processing…';
+
+  const v = db_data.vehicles[selectedVehicle];
+  const priceInfo  = recalcPrice();
+  const pickup     = document.getElementById('pickup').value;
+  const dropoff    = document.getElementById('dropoff').value;
+  const isGroup    = document.querySelector('input[name="booking-type"]:checked')?.value === 'group';
+  const passengers = isGroup ? parseInt(document.getElementById('passenger-count')?.value || 1) : 1;
+  const groupMembers = document.getElementById('group-members')?.value || '';
+  const notes      = document.getElementById('booking-notes')?.value || '';
+  const payment    = document.querySelector('input[name="payment"]:checked')?.value || 'mpesa';
+  const dist       = selectedRoute ? selectedRoute.distanceKm : estimateDist();
+  const eta        = selectedRoute ? selectedRoute.estimatedMinutes : Math.round(dist * 2.5);
+
+  try {
+    await createBooking(currentUser.uid, {
+      pickupLocation:  pickup,
+      dropoffLocation: dropoff,
+      vehicleType:     selectedVehicle,
+      vehicleName:     v.name,
+      vehicleIcon:     v.icon,
+      amount:          priceInfo.baseAmount,
+      discountedAmount: priceInfo.finalAmount,
+      discount:        priceInfo.discount,
+      distanceKm:      dist,
+      estimatedMinutes: eta,
+      passengerCount:  passengers,
+      isGroupBooking:  isGroup,
+      groupMembers:    groupMembers,
+      notes,
+      paymentMethod:   payment,
+    });
+
+    toast('🎉 Booking confirmed! Your driver is being assigned.', 'success');
+
+    // Reset form
+    selectedVehicle = null; selectedRoute = null; appliedDiscount = null;
+    gotoStep(1);
+    document.getElementById('pickup').value = '';
+    document.getElementById('dropoff').value = '';
+
+    setTimeout(() => switchView('bookings'), 1500);
+  } catch (err) {
+    toast('Booking failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '🚗 Confirm Booking';
+  }
+};
+
+// ── Render Bookings List ───────────────────────────────────────────────────
+let currentFilter = 'all';
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderBookingsList(currentFilter);
+  });
+});
+
+function renderBookingsList(filter) {
+  const container = document.getElementById('bookings-list');
+  const list = filter === 'all' ? allBookings : allBookings.filter(b => b.status === filter);
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:60px;color:var(--text-muted)">
+        <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+        <div>${filter === 'all' ? 'No bookings yet.' : `No ${filter} rides.`}</div>
+        ${filter === 'all' ? `<button onclick="switchView('book')" style="color:var(--amber);background:none;border:none;cursor:pointer;margin-top:8px;font-size:0.9rem">Book your first ride →</button>` : ''}
+      </div>`;
+    return;
+  }
+  container.innerHTML = list.map(b => bookingItemHTML(b)).join('');
+  container.querySelectorAll('.booking-detail-btn').forEach(btn => {
+    btn.addEventListener('click', () => showBookingDetail(btn.dataset.id));
+  });
+}
+
+function bookingItemHTML(b) {
+  const statusDot = { pending:'🟡', confirmed:'🔵', 'in-transit':'🟣', completed:'🟢', cancelled:'🔴' };
+  const date = new Date(b.createdAt).toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  return `
+    <div class="booking-item">
+      <div class="booking-vehicle-icon">${b.vehicleIcon || '🚗'}</div>
+      <div class="booking-route">
+        <div class="booking-from">${b.pickupLocation}</div>
+        <div class="booking-to">→ ${b.dropoffLocation}</div>
+        <div class="booking-meta">${date} · ${b.distanceKm || '?'}km · ${b.passengerCount || 1} pax · ${b.paymentMethod?.toUpperCase() || 'M-PESA'}</div>
+      </div>
+      <div>
+        <span class="badge badge-${b.status}">${statusDot[b.status]} ${b.status.replace('-',' ')}</span>
+        ${b.isGroupBooking ? '<span class="badge" style="background:rgba(168,85,247,0.15);color:var(--purple);margin-top:4px;display:block">👥 Group</span>' : ''}
+      </div>
+      <div>
+        <div class="booking-amount">KES ${(b.discountedAmount || b.amount || 0).toLocaleString()}</div>
+        ${b.discount > 0 ? `<div style="font-size:0.75rem;color:var(--green);text-align:right">${b.discount}% OFF</div>` : ''}
+        <button class="btn btn-ghost btn-sm booking-detail-btn" data-id="${b.id}" style="margin-top:4px;width:100%">Details →</button>
+      </div>
+    </div>`;
+}
+
+// ── Recent Bookings (Home) ─────────────────────────────────────────────────
+function renderRecentBookings(bookings) {
+  const container = document.getElementById('recent-bookings-list');
+  if (bookings.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--text-muted)">
+        <div style="font-size:2.5rem;margin-bottom:12px">🚗</div>
+        <div>No rides yet. <button onclick="switchView('book')" style="color:var(--amber);background:none;border:none;cursor:pointer;font-size:inherit">Book your first ride →</button></div>
+      </div>`;
+    return;
+  }
+  container.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">${bookings.map(b => bookingItemHTML(b)).join('')}</div>`;
+  container.querySelectorAll('.booking-detail-btn').forEach(btn => {
+    btn.addEventListener('click', () => showBookingDetail(btn.dataset.id));
+  });
+}
+
+// ── Booking Detail Modal ───────────────────────────────────────────────────
+function showBookingDetail(id) {
+  const b = allBookings.find(x => x.id === id);
+  if (!b) return;
+  const statuses = ['pending','confirmed','in-transit','completed'];
+  const curIdx = statuses.indexOf(b.status);
+  const labels = { pending:'Booking Received', confirmed:'Driver Assigned', 'in-transit':'En Route', completed:'Arrived' };
+  const icons  = { pending:'⏳', confirmed:'✓', 'in-transit':'🚗', completed:'🏁' };
+  const date = new Date(b.createdAt).toLocaleDateString('en-KE', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  document.getElementById('booking-detail-content').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:2rem">${b.vehicleIcon || '🚗'}</span>
+        <div>
+          <div style="font-weight:700">${b.vehicleName || 'Ride'}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">${date}</div>
+        </div>
+        <div style="margin-left:auto"><span class="badge badge-${b.status}">${b.status}</span></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.88rem">
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">FROM</div>
+          <div style="font-weight:600">${b.pickupLocation}</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">TO</div>
+          <div style="font-weight:600">${b.dropoffLocation}</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">DISTANCE</div>
+          <div style="font-weight:600">${b.distanceKm || '?'} km</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">EST. TIME</div>
+          <div style="font-weight:600">${b.estimatedMinutes || '?'} min</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">PASSENGERS</div>
+          <div style="font-weight:600">${b.passengerCount || 1} ${b.isGroupBooking ? '(Group)' : ''}</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px">
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">PAYMENT</div>
+          <div style="font-weight:600">${(b.paymentMethod || 'M-Pesa').toUpperCase()}</div>
+        </div>
+      </div>
+
+      ${b.notes ? `<div style="background:var(--surface);border-radius:var(--radius-sm);padding:12px;font-size:0.88rem"><div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px">NOTES</div>${b.notes}</div>` : ''}
+
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="color:var(--text-muted);font-size:0.85rem">Base Fare</span>
+          <span>KES ${(b.amount || 0).toLocaleString()}</span>
+        </div>
+        ${b.discount > 0 ? `<div style="display:flex;justify-content:space-between;align-items:center;color:var(--green);margin-bottom:4px"><span style="font-size:0.85rem">Discount (${b.discount}%)</span><span>- KES ${((b.amount||0)-(b.discountedAmount||b.amount||0)).toLocaleString()}</span></div>` : ''}
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:6px">
+          <span style="font-weight:700">Total Paid</span>
+          <span style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--amber)">KES ${(b.discountedAmount||b.amount||0).toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em">Ride Timeline</div>
+        <div class="status-timeline">
+          ${statuses.map((s, i) => `
+            <div class="timeline-item ${i < curIdx ? 'done' : i === curIdx ? 'active' : ''}">
+              <div class="timeline-dot">${i < curIdx ? '✓' : i === curIdx ? icons[s] : ''}</div>
+              <div>
+                <div class="timeline-label">${labels[s]}</div>
+                <div class="timeline-sub">${i <= curIdx ? (i === curIdx && b.status !== 'completed' ? 'Current status' : 'Done') : 'Pending'}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      ${b.status === 'pending' ? `
+      <button class="btn btn-danger btn-block" onclick="cancelBooking('${b.id}')">Cancel Booking</button>` : ''}
+    </div>
+  `;
+  document.getElementById('booking-detail-modal').classList.remove('hidden');
+}
+
+document.getElementById('close-booking-modal').addEventListener('click', () => {
+  document.getElementById('booking-detail-modal').classList.add('hidden');
+});
+
+window.cancelBooking = async function(id) {
+  const { updateBookingStatus } = await import('../js/firebase.js');
+  await updateBookingStatus(currentUser.uid, id, 'cancelled');
+  document.getElementById('booking-detail-modal').classList.add('hidden');
+  toast('Booking cancelled.', 'info');
+};
+
+// ── Track Active Ride ──────────────────────────────────────────────────────
+function checkActiveRide(bookings) {
+  const active = bookings.find(b => ['pending','confirmed','in-transit'].includes(b.status));
+  const container = document.getElementById('track-content');
+  if (!active) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:60px;color:var(--text-muted)">
+        <div style="font-size:3rem;margin-bottom:16px">📍</div>
+        <div style="font-size:1rem;font-weight:600;margin-bottom:8px">No Active Ride</div>
+        <div style="font-size:0.88rem">Book a ride to start tracking it here.</div>
+        <button class="btn btn-primary mt-2" onclick="switchView('book')">Book a Ride</button>
+      </div>`;
+    return;
+  }
+  const statuses = ['pending','confirmed','in-transit','completed'];
+  const labels  = { pending:'Booking Received', confirmed:'Driver Assigned', 'in-transit':'En Route to Destination', completed:'Arrived at Destination' };
+  const curIdx  = statuses.indexOf(active.status);
+
+  container.innerHTML = `
+    <div style="max-width:520px">
+      <div class="card card-glow" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <span style="font-size:2rem">${active.vehicleIcon || '🚗'}</span>
+          <div>
+            <div style="font-weight:700;font-family:'Syne',sans-serif">${active.vehicleName || 'Your Ride'}</div>
+            <div style="font-size:0.82rem;color:var(--text-muted)">${active.pickupLocation} → ${active.dropoffLocation}</div>
+          </div>
+          <span class="badge badge-${active.status}" style="margin-left:auto">${active.status}</span>
+        </div>
+
+        <div class="status-timeline">
+          ${statuses.map((s, i) => `
+            <div class="timeline-item ${i < curIdx ? 'done' : i === curIdx ? 'active' : ''}">
+              <div class="timeline-dot">${i < curIdx ? '✓' : i === curIdx ? '→' : ''}</div>
+              <div>
+                <div class="timeline-label">${labels[s]}</div>
+                ${i === curIdx && s !== 'completed' ? `<div class="timeline-sub" style="color:var(--amber)">● Live</div>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.88rem">
+          <div>
+            <div style="color:var(--text-muted);margin-bottom:4px;font-size:0.75rem">ESTIMATED ARRIVAL</div>
+            <div style="font-weight:700;font-size:1.1rem">${active.estimatedMinutes || '?'} min</div>
+          </div>
+          <div>
+            <div style="color:var(--text-muted);margin-bottom:4px;font-size:0.75rem">DISTANCE</div>
+            <div style="font-weight:700;font-size:1.1rem">${active.distanceKm || '?'} km</div>
+          </div>
+          <div>
+            <div style="color:var(--text-muted);margin-bottom:4px;font-size:0.75rem">PAYMENT</div>
+            <div style="font-weight:700">${(active.paymentMethod || 'M-Pesa').toUpperCase()}</div>
+          </div>
+          <div>
+            <div style="color:var(--text-muted);margin-bottom:4px;font-size:0.75rem">AMOUNT</div>
+            <div style="font-weight:700;color:var(--amber)">KES ${(active.discountedAmount||active.amount||0).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Profile ────────────────────────────────────────────────────────────────
+function renderProfile() {
+  if (!userData) return;
+  const joined = new Date(userData.createdAt).toLocaleDateString('en-KE', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('profile-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--ink)">
+        ${userData.fullName.charAt(0).toUpperCase()}
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700">${userData.fullName}</div>
+        <div style="font-size:0.85rem;color:var(--text-muted)">Member since ${joined}</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${[
+        ['Full Name', userData.fullName, '👤'],
+        ['Email Address', userData.email, '✉️'],
+        ['Phone Number', userData.phone, '📞'],
+        ['ID / Passport', userData.idNumber, '🪪'],
+        ['Location', userData.location, '📍'],
+      ].map(([label, val, icon]) => `
+        <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px">
+          <span style="font-size:1rem">${icon}</span>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">${label}</div>
+            <div style="font-weight:600;font-size:0.92rem;margin-top:2px">${val || '—'}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── Discounts ──────────────────────────────────────────────────────────────
+function renderDiscounts() {
+  const container = document.getElementById('discounts-grid');
+  Object.entries(db_data.discounts).forEach(([key, d]) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.border = '1px solid rgba(245,158,11,0.2)';
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700">${d.label}</div>
+        <div style="background:var(--amber);color:var(--ink);font-weight:800;font-family:'Syne',sans-serif;font-size:1.1rem;padding:6px 14px;border-radius:100px">${d.percentage}%</div>
+      </div>
+      <div style="font-size:0.88rem;color:var(--text-muted);margin-bottom:12px">${d.description}</div>
+      <div style="background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--amber);letter-spacing:0.05em">${d.code}</span>
+        <button onclick="navigator.clipboard.writeText('${d.code}').then(()=>toast('Code copied!','success'))" class="btn btn-ghost btn-sm">Copy</button>
+      </div>
+      ${d.oneTime ? '<div style="font-size:0.75rem;color:var(--text-muted);margin-top:8px">⚠️ One-time use only</div>' : ''}
+    `;
+    container.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>

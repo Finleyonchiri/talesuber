@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip History — TalesUber</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <style>
+    .history-table{width:100%;border-collapse:collapse}
+    .history-table th{text-align:left;font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 16px;border-bottom:1px solid var(--border)}
+    .history-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88rem;vertical-align:middle}
+    .history-table tr:hover td{background:rgba(255,255,255,.02)}
+    .month-divider{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--amber);padding:16px 0 8px;display:flex;align-items:center;gap:12px}
+    .month-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+    .chart-bar-wrap{margin-top:24px}
+    .chart-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:.82rem}
+    .chart-bar-label{width:140px;color:var(--text-muted);flex-shrink:0}
+    .chart-bar-track{flex:1;background:var(--surface);border-radius:100px;height:10px;overflow:hidden}
+    .chart-bar-fill{height:100%;background:var(--amber);border-radius:100px;transition:width .6s ease}
+    .chart-bar-val{width:64px;text-align:right;font-weight:600;color:var(--text)}
+    @media(max-width:700px){.stats-row{grid-template-columns:1fr 1fr}.history-table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+<div id="page-loader"><div class="loader-logo">TalesUber</div><div class="loader-bar"><div class="loader-bar-fill"></div></div></div>
+<div id="toast-container"></div>
+
+<nav class="navbar">
+  <a href="dashboard.html" class="navbar-brand"><div class="navbar-logo">🚗</div><span class="navbar-brand-text">Tales<span>Uber</span></span></a>
+  <div class="navbar-links">
+    <a href="book.html" class="btn btn-primary btn-sm">+ Book Ride</a>
+    <button class="btn btn-secondary btn-sm" id="logout-btn">Sign Out</button>
+  </div>
+</nav>
+
+<div class="page-content">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon">🏠</span> Home</a>
+        <a href="book.html" class="sidebar-link"><span class="sidebar-icon">➕</span> New Booking</a>
+        <a href="bookings.html" class="sidebar-link"><span class="sidebar-icon">📋</span> My Bookings</a>
+        <a href="group-booking.html" class="sidebar-link"><span class="sidebar-icon">👥</span> Group Booking</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <a href="profile.html" class="sidebar-link"><span class="sidebar-icon">👤</span> My Profile</a>
+        <a href="history.html" class="sidebar-link active"><span class="sidebar-icon">🕐</span> Trip History</a>
+      </div>
+      <div class="sidebar-user"><div class="sidebar-user-name" id="su-name">—</div><div class="sidebar-user-email" id="su-email"></div></div>
+    </aside>
+
+    <main class="dash-main" id="main-content" style="opacity:0;transition:opacity .4s">
+      <div class="dash-header">
+        <div><h1 class="dash-title">Trip History</h1><p class="dash-subtitle">Full record of all your rides</p></div>
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Export</button>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-label">Total Trips</div><div class="stat-card-value text-amber" id="h-total">0</div><div class="stat-card-sub">All time</div></div>
+        <div class="stat-card"><div class="stat-card-label">Completed</div><div class="stat-card-value text-green" id="h-done">0</div><div class="stat-card-sub">Successful rides</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Spent</div><div class="stat-card-value" id="h-spent">KES 0</div><div class="stat-card-sub">Lifetime</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Saved</div><div class="stat-card-value text-amber" id="h-saved">KES 0</div><div class="stat-card-sub">Via discounts</div></div>
+      </div>
+
+      <!-- Vehicle Usage Chart -->
+      <div class="card" style="margin-bottom:24px">
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px">Vehicle Preference</h3>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px">Your most used vehicle types</p>
+        <div class="chart-bar-wrap" id="vehicle-chart">
+          <div style="color:var(--text-muted);font-size:.88rem">No trips yet</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700">All Trips</h3>
+          <select class="form-control" id="sort-select" style="width:auto;padding:6px 12px;font-size:.82rem">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest">Highest Amount</option>
+            <option value="lowest">Lowest Amount</option>
+          </select>
+        </div>
+        <div id="history-table-wrap">
+          <div style="padding:48px;text-align:center;color:var(--text-muted)">Loading…</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import { onAuthChange, getBookings } from '../js/firebase.js';
+import { hideLoader, formatKES, formatDate, statusBadge } from '../js/utils.js';
+
+const VICONS = {motorbike:'🏍️','tuk-tuk':'🛺',car:'🚗',suv:'🚙',minibus:'🚐'};
+const VNAMES = {motorbike:'MotoBoda','tuk-tuk':'TukTuk',car:'TalesRide',suv:'TalesX',minibus:'TalesShuttle'};
+
+let allBookings = [];
+
+function renderTable(bookings) {
+  const wrap = document.getElementById('history-table-wrap');
+  if (!bookings.length) {
+    wrap.innerHTML = `<div style="padding:48px;text-align:center;color:var(--text-muted)">
+      <div style="font-size:3rem;margin-bottom:12px">📭</div>
+      <p>No trip history yet. <a href="book.html" style="color:var(--amber)">Book your first ride!</a></p>
+    </div>`;
+    return;
+  }
+
+  // Group by month
+  const grouped = {};
+  bookings.forEach(b => {
+    const key = new Date(b.createdAt).toLocaleDateString('en-KE',{month:'long',year:'numeric'});
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(b);
+  });
+
+  wrap.innerHTML = Object.entries(grouped).map(([month, list]) => `
+    <div style="padding:0 24px"><div class="month-divider">${month} <span style="font-weight:400;color:var(--text-muted)">${list.length} trip${list.length>1?'s':''}</span></div></div>
+    <table class="history-table">
+      <thead><tr>
+        <th>Vehicle</th><th>Route</th><th>Date</th><th>Pax</th><th>Fare</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+        ${list.map(b => `<tr>
+          <td><span style="font-size:1.2rem">${VICONS[b.vehicleType]||'🚗'}</span> ${VNAMES[b.vehicleType]||b.vehicleType}</td>
+          <td>
+            <div style="font-weight:600;font-size:.85rem">${b.pickupLocation}</div>
+            <div style="color:var(--text-muted);font-size:.78rem">→ ${b.dropoffLocation}</div>
+          </td>
+          <td style="color:var(--text-muted);font-size:.82rem">${formatDate(b.createdAt)}</td>
+          <td>${b.passengerCount||1}${b.isGroupBooking?'<span style="color:var(--amber);font-size:.7rem;margin-left:4px">GROUP</span>':''}</td>
+          <td>
+            <div style="font-weight:700;color:var(--amber)">${formatKES(b.discountedAmount||b.amount)}</div>
+            ${b.discountAmt>0?`<div style="font-size:.72rem;color:var(--green)">−${formatKES(b.discountAmt)} off</div>`:''}
+          </td>
+          <td>${statusBadge(b.status)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `).join('');
+}
+
+function renderChart(bookings) {
+  const counts = {};
+  bookings.forEach(b => { counts[b.vehicleType] = (counts[b.vehicleType]||0) + 1; });
+  const max = Math.max(...Object.values(counts), 1);
+  const el = document.getElementById('vehicle-chart');
+  if (!Object.keys(counts).length) return;
+  el.innerHTML = Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([type, count]) => `
+    <div class="chart-bar-row">
+      <div class="chart-bar-label">${VICONS[type]||'🚗'} ${VNAMES[type]||type}</div>
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(count/max)*100}%"></div></div>
+      <div class="chart-bar-val">${count} ride${count>1?'s':''}</div>
+    </div>
+  `).join('');
+}
+
+function sortBookings(bookings, by) {
+  const arr = [...bookings];
+  if (by === 'newest') return arr.sort((a,b) => b.createdAt - a.createdAt);
+  if (by === 'oldest') return arr.sort((a,b) => a.createdAt - b.createdAt);
+  if (by === 'highest') return arr.sort((a,b) => (b.discountedAmount||b.amount) - (a.discountedAmount||a.amount));
+  if (by === 'lowest') return arr.sort((a,b) => (a.discountedAmount||a.amount) - (b.discountedAmount||b.amount));
+  return arr;
+}
+
+document.getElementById('sort-select').addEventListener('change', e => {
+  renderTable(sortBookings(allBookings, e.target.value));
+});
+
+onAuthChange(async (user) => {
+  if (!user) { window.location.href = 'login.html'; return; }
+  document.getElementById('su-name').textContent = user.displayName || user.email;
+  document.getElementById('su-email').textContent = user.email;
+
+  allBookings = await getBookings(user.uid);
+  const completed = allBookings.filter(b => b.status === 'completed');
+  const spent = completed.reduce((s,b) => s+(b.discountedAmount||b.amount||0), 0);
+  const saved = allBookings.reduce((s,b) => s+(b.discountAmt||0), 0);
+
+  document.getElementById('h-total').textContent = allBookings.length;
+  document.getElementById('h-done').textContent = completed.length;
+  document.getElementById('h-spent').textContent = formatKES(spent);
+  document.getElementById('h-saved').textContent = formatKES(saved);
+
+  renderChart(allBookings);
+  renderTable(sortBookings(allBookings, 'newest'));
+
+  document.getElementById('main-content').style.opacity = '1';
+  hideLoader();
+});
+
+document.getElementById('logout-btn').addEventListener('click', async () => { const {logoutUser} = await import('../js/firebase.js'); await logoutUser(); });
+</script>
+</body>
+</html>

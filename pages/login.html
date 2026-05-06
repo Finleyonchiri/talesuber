@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — TalesUber</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="auth-page">
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-overlay"></div>
+    <img src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?w=1200&q=80"
+      alt="Kenya road at sunset" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"
+      onerror="this.style.display='none'" />
+    <div class="auth-visual-content">
+      <div style="font-size:2.5rem;margin-bottom:16px">🏍️</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:12px">Welcome Back</h2>
+      <p style="color:rgba(255,255,255,0.7);max-width:340px;line-height:1.7">
+        Your rides, bookings and history — all waiting for you. Sign in to continue riding with TalesUber across Western Kenya.
+      </p>
+      <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--amber)">500+</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:2px">Active Drivers</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--amber)">24/7</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:2px">Available</div>
+        </div>
+      </div>
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.15)">
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.5)">A product of</div>
+        <div style="font-weight:700;font-size:1rem;margin-top:4px">TalesUber Kenya</div>
+        <div style="font-size:0.82rem;color:var(--amber)">Founded by Finley Nyabuga · Maseno, Kisumu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-wrapper">
+    <div class="auth-form-inner animate-fade-in">
+      <a href="../index.html" class="auth-logo">
+        <div class="auth-logo-icon">🚗</div>
+        <span class="auth-logo-text">Tales<span>Uber</span></span>
+      </a>
+
+      <h1 class="auth-title">Sign In</h1>
+      <p class="auth-subtitle">Enter your email and password to continue</p>
+
+      <form class="auth-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="you@example.com" required autofocus />
+          <span class="form-error hidden" id="err-email"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="display:flex;justify-content:space-between">
+            Password
+            <a href="#" id="forgot-link" style="color:var(--amber);font-size:0.82rem;text-decoration:none;font-weight:500">Forgot password?</a>
+          </label>
+          <div style="position:relative">
+            <input type="password" id="password" class="form-control" placeholder="Your password" required style="padding-right:44px" />
+            <button type="button" id="toggle-pw" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem">👁</button>
+          </div>
+          <span class="form-error hidden" id="err-password"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+          Sign In
+        </button>
+
+        <div class="auth-switch">
+          New to TalesUber? <a href="register.html">Create an account</a>
+        </div>
+      </form>
+
+      <!-- Forgot Password Modal -->
+      <div id="reset-modal" class="modal-overlay hidden">
+        <div class="modal" style="max-width:400px">
+          <div class="modal-header">
+            <div class="modal-title">Reset Password</div>
+            <button class="modal-close" id="close-reset">✕</button>
+          </div>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:20px">
+            Enter your email address and we'll send you a reset link.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="reset-email" class="form-control" placeholder="you@example.com" />
+          </div>
+          <button class="btn btn-primary btn-block mt-2" id="send-reset-btn">Send Reset Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { loginUser, onAuthChange, resetPassword } from '../js/firebase.js';
+
+  onAuthChange(user => { if (user) window.location.href = 'dashboard.html'; });
+
+  document.getElementById('toggle-pw').addEventListener('click', () => {
+    const pw = document.getElementById('password');
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  });
+
+  function toast(msg, type = 'info') {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-text">${msg}</span>`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    let valid = true;
+
+    document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
+    if (!email)    { document.getElementById('err-email').textContent = 'Enter your email'; document.getElementById('err-email').classList.remove('hidden'); valid = false; }
+    if (!password) { document.getElementById('err-password').textContent = 'Enter your password'; document.getElementById('err-password').classList.remove('hidden'); valid = false; }
+    if (!valid) return;
+
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+
+    try {
+      await loginUser(email, password);
+      toast('Welcome back! 🚗', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Sign In';
+      const msgs = {
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password. Try again.',
+        'auth/invalid-credential': 'Invalid email or password.',
+        'auth/too-many-requests': 'Too many failed attempts. Try again later.',
+      };
+      toast(msgs[err.code] || 'Sign in failed. Check your details.', 'error');
+    }
+  });
+
+  document.getElementById('forgot-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('reset-modal').classList.remove('hidden');
+  });
+  document.getElementById('close-reset').addEventListener('click', () => {
+    document.getElementById('reset-modal').classList.add('hidden');
+  });
+
+  document.getElementById('send-reset-btn').addEventListener('click', async () => {
+    const email = document.getElementById('reset-email').value.trim();
+    if (!email) { toast('Enter your email address', 'error'); return; }
+    try {
+      await resetPassword(email);
+      toast('Reset link sent! Check your inbox.', 'success');
+      document.getElementById('reset-modal').classList.add('hidden');
+    } catch {
+      toast('Could not send reset link. Check the email.', 'error');
+    }
+  });
+</script>
+</body>
+</html>

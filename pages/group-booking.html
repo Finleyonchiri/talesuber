@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Booking — TalesUber</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <style>
+    .group-hero{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(59,130,246,.05));border:1px solid rgba(168,85,247,.2);border-radius:var(--radius);padding:28px;margin-bottom:28px;display:flex;align-items:center;gap:24px}
+    .group-hero-icon{font-size:3.5rem;flex-shrink:0}
+    .member-row{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius-sm);padding:12px 16px}
+    .member-num{width:28px;height:28px;border-radius:50%;background:var(--amber);color:var(--ink);font-weight:800;font-size:0.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .member-input{background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.92rem;flex:1}
+    .members-container{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .group-vehicles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin:16px 0}
+    .gv-card{background:var(--ink-2);border:2px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+    .gv-card:hover{border-color:rgba(168,85,247,.5);transform:translateY(-2px)}
+    .gv-card.selected{border-color:#a855f7;background:rgba(168,85,247,.08)}
+    .gv-card.disabled{opacity:.4;pointer-events:none}
+    .gv-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px}
+    .summary-panel{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:88px}
+    .split-info{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius-sm);padding:14px;margin-top:12px}
+    .layout2{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}.summary-panel{position:static}}
+  </style>
+</head>
+<body>
+<div id="page-loader"><div class="loader-logo">TalesUber</div><div class="loader-bar"><div class="loader-bar-fill"></div></div></div>
+<div id="toast-container"></div>
+
+<nav class="navbar">
+  <a href="dashboard.html" class="navbar-brand"><div class="navbar-logo">🚗</div><span class="navbar-brand-text">Tales<span>Uber</span></span></a>
+  <div class="navbar-links">
+    <a href="bookings.html" class="nav-link">My Bookings</a>
+    <button class="btn btn-secondary btn-sm" id="logout-btn">Sign Out</button>
+  </div>
+</nav>
+
+<div class="page-content">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon">🏠</span> Home</a>
+        <a href="book.html" class="sidebar-link"><span class="sidebar-icon">➕</span> New Booking</a>
+        <a href="bookings.html" class="sidebar-link"><span class="sidebar-icon">📋</span> My Bookings</a>
+        <a href="group-booking.html" class="sidebar-link active"><span class="sidebar-icon">👥</span> Group Booking</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <a href="profile.html" class="sidebar-link"><span class="sidebar-icon">👤</span> My Profile</a>
+        <a href="history.html" class="sidebar-link"><span class="sidebar-icon">🕐</span> Trip History</a>
+      </div>
+      <div class="sidebar-user"><div class="sidebar-user-name" id="su-name">—</div><div class="sidebar-user-email" id="su-email"></div></div>
+    </aside>
+
+    <main class="dash-main" id="main-content" style="opacity:0;transition:opacity .4s">
+      <div class="dash-header">
+        <div><h1 class="dash-title">Group Booking</h1><p class="dash-subtitle">Travel together, save together — 15% group discount</p></div>
+      </div>
+
+      <div class="group-hero">
+        <div class="group-hero-icon">👥</div>
+        <div>
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem">Book for your whole crew</h3>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:6px">Add 3 or more passengers and automatically get <strong style="color:var(--amber)">15% off</strong> your total fare. Perfect for events, campus trips, and family outings.</p>
+          <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted)">✅ 15% group discount</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted)">✅ Split fare per person</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted)">✅ One booking for all</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout2">
+        <div>
+          <!-- Route -->
+          <div class="card" style="margin-bottom:24px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:20px">📍 Route</h3>
+            <div style="display:grid;gap:14px">
+              <div class="form-group">
+                <label class="form-label">Pickup Location</label>
+                <select class="form-control" id="pickup"><option value="">Select pickup…</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Drop-off Location</label>
+                <select class="form-control" id="dropoff"><option value="">Select destination…</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Members -->
+          <div class="card" style="margin-bottom:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <h3 style="font-family:'Syne',sans-serif;font-weight:700">👥 Group Members</h3>
+              <span style="background:var(--surface);padding:4px 12px;border-radius:100px;font-size:0.82rem;color:var(--text-muted)" id="member-count-badge">3 members</span>
+            </div>
+            <div class="members-container" id="members-container">
+              <!-- rendered by JS -->
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-secondary btn-sm" id="add-member-btn">+ Add Member</button>
+              <button class="btn btn-ghost btn-sm" id="remove-member-btn">− Remove</button>
+            </div>
+          </div>
+
+          <!-- Vehicle -->
+          <div class="card" style="margin-bottom:24px">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:16px">🚗 Vehicle</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px">Only vehicles that fit your group are shown.</p>
+            <div class="group-vehicles" id="group-vehicles"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:12px">📝 Notes <span style="background:var(--surface);color:var(--text-muted);font-size:0.72rem;padding:2px 8px;border-radius:100px;font-family:'DM Sans',sans-serif">Optional</span></h3>
+            <textarea class="form-control" id="notes" rows="3" placeholder="e.g. Event name, special instructions…"></textarea>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-panel">
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:20px">Group Summary</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:0.88rem">
+            <div style="display:flex;justify-content:space-between"><span class="text-muted">Vehicle</span><span id="s-vehicle">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span class="text-muted">Passengers</span><span id="s-pax">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span class="text-muted">Distance</span><span id="s-dist">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span class="text-muted">Base Fare</span><span id="s-base">—</span></div>
+            <div style="display:flex;justify-content:space-between;color:var(--green)"><span>Group Discount (15%)</span><span id="s-disc">—</span></div>
+            <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-weight:700">Total</span>
+              <span style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--amber)" id="s-total">KES 0</span>
+            </div>
+          </div>
+          <div class="split-info" id="split-info" style="display:none">
+            <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:4px">Per person split</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--green)" id="s-split">KES 0</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">each member pays</div>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" style="margin-top:20px;background:#a855f7;color:#fff" id="group-book-btn" disabled>
+            👥 Confirm Group Booking
+          </button>
+          <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px">Payment in Kenyan Shillings (KES)</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="modal-overlay hidden">
+  <div class="modal" style="text-align:center;max-width:420px">
+    <div style="font-size:4rem;margin-bottom:16px">🎉</div>
+    <h2 class="modal-title" style="margin-bottom:8px">Group Booking Confirmed!</h2>
+    <p style="color:var(--text-muted);margin-bottom:20px">All aboard! Your group ride is booked.</p>
+    <div id="success-detail" style="background:var(--surface);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;text-align:left;font-size:0.88rem"></div>
+    <div style="display:flex;gap:12px">
+      <a href="bookings.html" class="btn btn-primary" style="flex:1">Track Ride</a>
+      <a href="dashboard.html" class="btn btn-secondary" style="flex:1">Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { onAuthChange, getUserData, createBooking } from '../js/firebase.js';
+import { hideLoader, toast, formatKES, LOCATIONS, estimateDistance, getBestDiscount } from '../js/utils.js';
+
+const VDATA = [
+  { id:'car',     name:'TalesRide',    icon:'🚗', seats:4,  basePrice:150, perKm:35 },
+  { id:'suv',     name:'TalesX',       icon:'🚙', seats:7,  basePrice:300, perKm:55 },
+  { id:'minibus', name:'TalesShuttle', icon:'🚐', seats:14, basePrice:500, perKm:80 },
+];
+
+let currentUser = null;
+let userData = null;
+let memberCount = 3;
+let selectedVehicle = null;
+
+function renderMembers() {
+  const c = document.getElementById('members-container');
+  c.innerHTML = Array.from({length: memberCount}, (_,i) => `
+    <div class="member-row">
+      <div class="member-num">${i+1}</div>
+      <input class="member-input" id="member-${i}" placeholder="${i===0?'You (organiser)':'Member ' + (i+1) + ' name'}" ${i===0?'readonly':''} />
+    </div>
+  `).join('');
+  // Fill first member with user name
+  if (userData?.fullName) document.getElementById('member-0').value = userData.fullName;
+  document.getElementById('member-count-badge').textContent = `${memberCount} members`;
+  renderVehicles();
+}
+
+function renderVehicles() {
+  const grid = document.getElementById('group-vehicles');
+  grid.innerHTML = VDATA.map(v => {
+    const fits = v.seats >= memberCount;
+    return `<div class="gv-card ${selectedVehicle?.id===v.id?'selected':''} ${!fits?'disabled':''}" onclick="${fits?`selectV('${v.id}`):''}')">
+      ${fits?'<div class="gv-badge">Fits</div>':''}
+      <div style="font-size:2rem;margin-bottom:8px">${v.icon}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem">${v.name}</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin:3px 0">${v.seats} seats max</div>
+      <div style="font-size:0.88rem;font-weight:700;color:var(--amber);margin-top:6px">From ${formatKES(v.basePrice)}</div>
+    </div>`;
+  }).join('');
+  if (selectedVehicle && selectedVehicle.seats < memberCount) { selectedVehicle = null; updateSummary(); }
+}
+
+window.selectV = function(id) {
+  selectedVehicle = VDATA.find(v => v.id === id);
+  renderVehicles();
+  updateSummary();
+};
+
+function updateSummary() {
+  const pickup = document.getElementById('pickup').value;
+  const dropoff = document.getElementById('dropoff').value;
+  document.getElementById('s-pax').textContent = memberCount + ' passengers';
+  if (!selectedVehicle || !pickup || !dropoff) { document.getElementById('group-book-btn').disabled = true; return; }
+  if (pickup === dropoff) { document.getElementById('group-book-btn').disabled = true; return; }
+
+  const dist = estimateDistance(pickup, dropoff);
+  const base = selectedVehicle.basePrice + selectedVehicle.perKm * dist;
+  const discAmt = Math.round(base * 0.15);
+  const total = base - discAmt;
+  const perPerson = Math.round(total / memberCount);
+
+  document.getElementById('s-vehicle').textContent = selectedVehicle.icon + ' ' + selectedVehicle.name;
+  document.getElementById('s-dist').textContent = dist + ' km';
+  document.getElementById('s-base').textContent = formatKES(base);
+  document.getElementById('s-disc').textContent = '−' + formatKES(discAmt);
+  document.getElementById('s-total').textContent = formatKES(total);
+  document.getElementById('s-split').textContent = formatKES(perPerson);
+  document.getElementById('split-info').style.display = 'block';
+  document.getElementById('group-book-btn').disabled = false;
+  document.getElementById('group-book-btn').dataset.dist = dist;
+  document.getElementById('group-book-btn').dataset.base = base;
+  document.getElementById('group-book-btn').dataset.disc = discAmt;
+  document.getElementById('group-book-btn').dataset.total = total;
+}
+
+document.getElementById('add-member-btn').addEventListener('click', () => {
+  if (memberCount >= 14) { toast('Max 14 passengers', 'error'); return; }
+  memberCount++; renderMembers(); updateSummary();
+});
+document.getElementById('remove-member-btn').addEventListener('click', () => {
+  if (memberCount <= 3) { toast('Minimum 3 for group booking', 'error'); return; }
+  memberCount--; renderMembers(); updateSummary();
+});
+['pickup','dropoff'].forEach(id => document.getElementById(id).addEventListener('change', updateSummary));
+
+document.getElementById('group-book-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('group-book-btn');
+  const pickup = document.getElementById('pickup').value;
+  const dropoff = document.getElementById('dropoff').value;
+  if (!selectedVehicle || !pickup || !dropoff) { toast('Fill all fields', 'error'); return; }
+
+  const members = Array.from({length: memberCount}, (_,i) => document.getElementById(`member-${i}`)?.value || '').filter(Boolean);
+
+  btn.disabled = true; btn.textContent = 'Booking…';
+  try {
+    const id = await createBooking(currentUser.uid, {
+      pickupLocation: pickup,
+      dropoffLocation: dropoff,
+      vehicleType: selectedVehicle.id,
+      vehicleName: selectedVehicle.name,
+      vehicleIcon: selectedVehicle.icon,
+      amount: Number(btn.dataset.base),
+      discountAmt: Number(btn.dataset.disc),
+      discountPct: 15,
+      discountLabel: 'Group Ride',
+      discountedAmount: Number(btn.dataset.total),
+      distanceKm: Number(btn.dataset.dist),
+      passengerCount: memberCount,
+      isGroupBooking: true,
+      groupMembers: members.join(', '),
+      notes: document.getElementById('notes').value,
+    });
+    document.getElementById('success-detail').innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Vehicle</span><span>${selectedVehicle.icon} ${selectedVehicle.name}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Group Size</span><span>${memberCount} passengers</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Group Discount</span><span style="color:var(--green)">15% off</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Total</span><span style="color:var(--amber);font-weight:700">${formatKES(Number(btn.dataset.total))}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Per Person</span><span>${formatKES(Math.round(Number(btn.dataset.total)/memberCount))}</span></div>
+      </div>`;
+    document.getElementById('success-modal').classList.remove('hidden');
+  } catch(e) {
+    toast(e.message || 'Failed', 'error');
+    btn.disabled = false; btn.textContent = '👥 Confirm Group Booking';
+  }
+});
+
+onAuthChange(async (user) => {
+  if (!user) { window.location.href = 'login.html'; return; }
+  currentUser = user;
+  userData = await getUserData(user.uid);
+  document.getElementById('su-name').textContent = userData?.fullName || user.email;
+  document.getElementById('su-email').textContent = user.email;
+
+  LOCATIONS.forEach(loc => {
+    ['pickup','dropoff'].forEach(id => {
+      const opt = document.createElement('option');
+      opt.value = loc; opt.textContent = loc;
+      document.getElementById(id).appendChild(opt);
+    });
+  });
+
+  renderMembers();
+  document.getElementById('main-content').style.opacity = '1';
+  hideLoader();
+});
+
+document.getElementById('logout-btn').addEventListener('click', async () => { const {logoutUser} = await import('../js/firebase.js'); await logoutUser(); });
+</script>
+</body>
+</html>

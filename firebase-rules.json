@@ -1,0 +1,44 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".validate": "newData.hasChildren(['fullName', 'phone', 'idNumber', 'location', 'email', 'createdAt'])",
+        "fullName": { ".validate": "newData.isString() && newData.val().length >= 2" },
+        "phone": { ".validate": "newData.isString() && newData.val().length >= 10" },
+        "idNumber": { ".validate": "newData.isString() && newData.val().length >= 6" },
+        "location": { ".validate": "newData.isString()" },
+        "email": { ".validate": "newData.isString()" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "bookings": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        "$bookingId": {
+          ".validate": "newData.hasChildren(['pickupLocation', 'dropoffLocation', 'vehicleType', 'amount', 'status', 'createdAt'])",
+          "pickupLocation": { ".validate": "newData.isString()" },
+          "dropoffLocation": { ".validate": "newData.isString()" },
+          "vehicleType": { ".validate": "newData.isString() && (newData.val() === 'motorbike' || newData.val() === 'car' || newData.val() === 'minibus' || newData.val() === 'tuk-tuk')" },
+          "amount": { ".validate": "newData.isNumber() && newData.val() > 0" },
+          "status": { ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'confirmed' || newData.val() === 'in-transit' || newData.val() === 'completed' || newData.val() === 'cancelled')" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "passengerCount": { ".validate": "newData.isNumber()" },
+          "isGroupBooking": { ".validate": "newData.isBoolean()" },
+          "groupMembers": { ".validate": "newData.isString()" },
+          "notes": { ".validate": "newData.isString()" },
+          "discount": { ".validate": "newData.isNumber()" },
+          "discountedAmount": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}
