@@ -61,7 +61,7 @@ export async function loginUser(email, password) {
 
 export async function logoutUser() {
   await signOut(auth);
-  window.location.href = "index.html";
+  window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
 }
 
 export function onAuthChange(callback) {
