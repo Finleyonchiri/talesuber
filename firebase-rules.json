@@ -33,6 +33,7 @@
           "amount": { ".validate": "newData.isNumber() && newData.val() > 0" },
           "discountAmt": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "discountPct": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "discount": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "discountLabel": { ".validate": "newData.isString()" },
           "discountedAmount": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "distanceKm": { ".validate": "newData.isNumber() && newData.val() >= 0" },
